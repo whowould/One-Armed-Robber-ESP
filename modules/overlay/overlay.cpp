@@ -156,13 +156,17 @@ void Overlay::draw(const Game& game, float width, float height) {
                 continue;
             if (!project(*cam, bot_w, width, height, bx, by))
                 continue;
-            const float top = std::floor(std::fmin(ty, by) + 0.5f);
-            const float bottom = std::floor(std::fmax(ty, by) + 0.5f);
-            const float tall = std::fmax(bottom - top, 4.f);
-            const float wide = std::fmax(tall * 0.45f, 4.f);
-            const float cx = std::floor((tx + bx) * 0.5f + 0.5f);
-            const float x0 = cx - wide * 0.5f;
-            const float x1 = cx + wide * 0.5f;
+            const float top = std::round(std::fmin(ty, by));
+            const float bottom = std::round(std::fmax(ty, by));
+            const float tall = bottom - top;
+            const float wide = std::round(std::fmax(tall * 0.45f, 4.f));
+            const float cx = std::round((tx + bx) * 0.5f);
+            const float x0 = std::round(cx - wide * 0.5f);
+            const float x1 = x0 + wide;
+            if (wide < 4.f || tall < 8.f)
+                continue;
+            if (wide > width * 0.85f && tall > height * 0.85f)
+                continue;
             const auto color = pawn.kind == ActorKind::Camera ? IM_COL32(90, 190, 255, 255) : IM_COL32(255, 70, 70, 255);
             const ImU32 outline = IM_COL32(1, 1, 1, 255);
             auto stroke = [&](float a, float b, float c, float d, ImU32 col) {
